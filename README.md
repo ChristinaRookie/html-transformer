@@ -32,7 +32,7 @@ The transformed file will be saved as `_output/transformed.html`.
 
 ## Actions
 
-Currently the only action created is `cleanMathJax`, which removes `.MathJax_Preview` and `.MathJax_CHTML` nodes.
+Currently the only actions created are `cleanMathJax`, which removes `.MathJax_Preview` and `.MathJax_CHTML` nodes, and `nerdc`, which strips everything but the content of a particular kind of file we're testing with.
 
 To create further actions, follow the `cleanMathJax` example there already:
 
