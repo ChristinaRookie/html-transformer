@@ -31,6 +31,7 @@ async function run(action) {
     // Log console messages to Node console
     page.on('console', msg => console.log('Page console says:', msg.text()));
 
+    // Go to the URL in Chrome
     await page.goto(url, {
             waitUntil: 'networkidle0',
             timeout: 3000000 });
