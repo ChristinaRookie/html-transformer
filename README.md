@@ -6,7 +6,10 @@ This Node script opens an HTML file in Puppeteer, transforms it, and saves the t
 
 ## Usage
 
-First, install the dependencies by running `npm install` in this folder.
+First, install:
+
+- the dependencies by running `npm install` in this folder
+- Puppeteer, by running `npm install puppeteer`
 
 ### Transforming a local file
 
