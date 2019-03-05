@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Render and transform HTML with Javascript",
   "main": "transform.js",
+  "repository": "https://github.com/electricbookworks/html-transformer/",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
