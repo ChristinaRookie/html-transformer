@@ -4,12 +4,26 @@ This is work in progress.
 
 This Node script opens an HTML file in Puppeteer, transforms it, and saves the transformed HTML file.
 
+
 ## Usage
 
-First, install:
+1. Install dependendies:
 
-- the dependencies by running `npm install` in this folder
-- Puppeteer, by running `npm install puppeteer`
+   - install node modules by running `npm install` in this folder
+   - install Puppeteer by running `npm install puppeteer`.
+
+2. Follow the instructions below for transforming an online page or a local one.
+
+### Transforming a page online
+
+Run:
+
+```shell
+node transform.js --url http://full/url/of/mypage.html --action myaction
+```
+
+The transformed file will be saved as `_output/transformed.html`.
+
 
 ### Transforming a local file
 
@@ -23,21 +37,10 @@ First, install:
 
 The transformed file will be saved to `_output/transformed.html`.
 
-### Transforming a page online
-
-Run
-
-```shell
-node transform.js --url http://full/url/of/mypage.html --action myaction
-```
-
-The transformed file will be saved as `_output/transformed.html`.
 
 ## Actions
 
-Currently the only actions created are `cleanMathJax`, which removes `.MathJax_Preview` and `.MathJax_CHTML` nodes, and `nerdc`, which strips everything but the content of a particular kind of file we're testing with.
+To create further actions, follow the `cleanMathJax` or `nerdc` example in `transform.js`:
 
-To create further actions, follow the `cleanMathJax` example there already:
-
-- write them at `// Page functions available`, and 
-- call them at `// Run page functions`, inside an if statement that checks whether than action was called from the command line.
+- write new functions at `// Page functions available`, and 
+- run them in response to command-line actions at `// Run page functions`.
