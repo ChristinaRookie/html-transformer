@@ -21,6 +21,23 @@ if (args.action && args.action.trim !== '') {
     action = args.action;
 }
 
+// For slugifying strings, like URLs into file names
+// Credit: https://medium.com/@mhagemann/the-ultimate-way-to-slugify-a-url-string-in-javascript-b8e4a0d849e1
+function slugify(string) {
+    const a = 'àáäâãåăæçèéëêǵḧìíïîḿńǹñòóöôœṕŕßśșțùúüûǘẃẍÿź·/_,:;'
+    const b = 'aaaaaaaaceeeeghiiiimnnnoooooprssstuuuuuwxyz------'
+    const p = new RegExp(a.split('').join('|'), 'g')
+
+    return string.toString().toLowerCase()
+        .replace(/\s+/g, '-') // Replace spaces with -
+        .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
+        .replace(/&/g, '-and-') // Replace & with ‘and’
+        .replace(/[^\w\-]+/g, '') // Remove all non-word characters
+        .replace(/\-\-+/g, '-') // Replace multiple - with single -
+        .replace(/^-+/, '') // Trim - from start of text
+        .replace(/-+$/, '') // Trim - from end of text
+}
+
 // The main file-processing function
 async function run(action) {
     'use strict';
@@ -40,9 +57,12 @@ async function run(action) {
     console.log('Transforming ' + url + ' with ' + action + ' ...');
 
     // Process the page
-    var transformed = await page.evaluate((action) => {
+    var transformedHTML = await page.evaluate((action) => {
 
         // Page functions available
+        // ------------------------
+
+        // Remove nodes
         async function removeNodes(selectors) {
             'use strict';
             var nodes = document.querySelectorAll(selectors);
@@ -52,13 +72,36 @@ async function run(action) {
                 nodes[i].remove();
             }
         }
+        // Extract a child node, insert it after its parent,
+        // and delete the parent
+        async function extractNodes(keepSelectors, deleteSelectors) {
+            'use strict';
+            var deleteNodes = document.querySelectorAll(deleteSelectors);
+            var i;
+            for (i = 0; i < deleteNodes.length; i += 1) {
+                var keepNodes = deleteNodes[i].querySelectorAll(keepSelectors);
+                var j;
+                for (j = 0; j < keepNodes.length; j += 1) {
+                    deleteNodes[i].insertAdjacentElement('afterEnd', keepNodes[j]);
+                }
+                deleteNodes[i].remove();
+            }
+        }
 
-        // Run page functions
+        // Run page functions from action commands
+        // ---------------------------------------
+
         if (action === 'cleanMathJax') {
             removeNodes('.MathJax_Preview, .MathJax_CHTML');
         }
         if (action === 'nerdc') {
-            removeNodes('head, header, nav, .MathJax_Preview, .MathJax_CHTML');
+            // removeNodes('head, header, nav, .MathJax_Preview, .MathJax_CHTML');
+            removeNodes('head, header, nav');
+            // addMathDelimiters('script[type="math/tex"]');
+            extractNodes('.MJX_Assistive_MathML', '.latex-math')
+        }
+        if (action === 'stripheads') {
+            removeNodes('head, header, nav');
         }
 
         // Return the page
@@ -69,7 +112,9 @@ async function run(action) {
     await browser.close();
 
     // Write the output file
-    fs.writeFile('_output/transformed.html', transformed, function(err) {  
+    var shortFilename = url.split(/(\\|\/)/g).pop() + '_transformed.html';
+    var longFilename = slugify(url) + '_transformed.html';
+    fs.writeFile('_output/' + longFilename, transformedHTML, function(err) {  
         if (err) {
             console.log('Sorry, got an error: ' + err);
         } else {
