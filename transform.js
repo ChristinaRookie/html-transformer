@@ -96,7 +96,7 @@ async function run(action) {
         }
         if (action === 'nerdc') {
             // removeNodes('head, header, nav, .MathJax_Preview, .MathJax_CHTML');
-            removeNodes('head, header, nav');
+            removeNodes('head, header, nav, footer, #MathJax_Message, .response-query-body, .how_to_write, [name="next-response"]');
             // addMathDelimiters('script[type="math/tex"]');
             extractNodes('.MJX_Assistive_MathML', '.latex-math')
         }
