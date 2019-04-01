@@ -87,6 +87,15 @@ async function run(action) {
                 deleteNodes[i].remove();
             }
         }
+        // Add a class to nodes
+        async function addClassToNodes(selectors, classToAdd) {
+            'use strict';
+            var nodesToClassify = document.querySelectorAll(selectors);
+            var i;
+            for (i = 0; i < nodesToClassify.length; i += 1) {
+                nodesToClassify[i].classList.add(classToAdd);
+            }
+        }
 
         // Run page functions from action commands
         // ---------------------------------------
@@ -98,7 +107,8 @@ async function run(action) {
             // removeNodes('head, header, nav, .MathJax_Preview, .MathJax_CHTML');
             removeNodes('head, header, nav, footer, #MathJax_Message, .response-query-body, .how_to_write, [name="next-response"]');
             // addMathDelimiters('script[type="math/tex"]');
-            extractNodes('.MJX_Assistive_MathML', '.latex-math')
+            extractNodes('.MJX_Assistive_MathML', '.latex-math');
+            addClassToNodes('[class^=id]', 'highlighter');
         }
         if (action === 'stripheads') {
             removeNodes('head, header, nav');
