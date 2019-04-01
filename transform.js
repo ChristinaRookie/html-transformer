@@ -24,9 +24,11 @@ if (args.action && args.action.trim !== '') {
 // For slugifying strings, like URLs into file names
 // Credit: https://medium.com/@mhagemann/the-ultimate-way-to-slugify-a-url-string-in-javascript-b8e4a0d849e1
 function slugify(string) {
-    const a = 'àáäâãåăæçèéëêǵḧìíïîḿńǹñòóöôœṕŕßśșțùúüûǘẃẍÿź·/_,:;'
-    const b = 'aaaaaaaaceeeeghiiiimnnnoooooprssstuuuuuwxyz------'
-    const p = new RegExp(a.split('').join('|'), 'g')
+    'use strict';
+
+    const a = 'àáäâãåăæçèéëêǵḧìíïîḿńǹñòóöôœṕŕßśșțùúüûǘẃẍÿź·/_,:;';
+    const b = 'aaaaaaaaceeeeghiiiimnnnoooooprssstuuuuuwxyz------';
+    const p = new RegExp(a.split('').join('|'), 'g');
 
     return string.toString().toLowerCase()
         .replace(/\s+/g, '-') // Replace spaces with -
@@ -62,6 +64,21 @@ async function run(action) {
         // Page functions available
         // ------------------------
 
+        // Insert full path to images
+        async function insertFullImagePath(imageSelector) {
+            'use strict';
+            var url = window.location.href;
+            if (url.includes('.html')) {
+                var url = url.substring(0, url.lastIndexOf("/"));
+            }
+            var images = document.querySelectorAll(imageSelector);
+            var i, currentImagePath, fullImagePath;
+            for (i = 0; i < images.length; i += 1) {
+                currentImagePath = images[i].getAttribute('src');
+                fullImagePath = url + '/' + currentImagePath;
+                images[i].setAttribute('src', fullImagePath);
+            }
+        }
         // Remove nodes
         async function removeNodes(selectors) {
             'use strict';
@@ -109,6 +126,7 @@ async function run(action) {
             // addMathDelimiters('script[type="math/tex"]');
             extractNodes('.MJX_Assistive_MathML', '.latex-math');
             addClassToNodes('[class^=id]', 'highlighter');
+            insertFullImagePath('img');
         }
         if (action === 'stripheads') {
             removeNodes('head, header, nav');
@@ -124,7 +142,7 @@ async function run(action) {
     // Write the output file
     var shortFilename = url.split(/(\\|\/)/g).pop() + '_transformed.html';
     var longFilename = slugify(url) + '_transformed.html';
-    fs.writeFile('_output/' + longFilename, transformedHTML, function(err) {  
+    fs.writeFile('_output/' + longFilename, transformedHTML, function(err) {
         if (err) {
             console.log('Sorry, got an error: ' + err);
         } else {
